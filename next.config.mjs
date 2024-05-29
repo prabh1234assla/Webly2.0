@@ -1,4 +1,14 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
 
-export default nextConfig;
+const nextConfig = {
+  reactStrictMode: true,
+  webpack: (config, options) => {
+    config.module.rules.push({
+      test: /\.glsl/,
+      type: "asset/source",
+    })
+    return config
+  },
+}
+
+export default nextConfig

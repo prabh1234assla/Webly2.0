@@ -26,7 +26,7 @@ const Navbar: FC<Props> = ({ section }) => {
                     height={64.01 * 1.7}
                     format="svg"
                 />
-                <div className=" text-secondary-200 font-black text-4xl flex flex-col">
+                <div className=" text-secondary-200 font-black text-3xl flex flex-col">
                     <span className=" inline-block">pd.</span>
                     <span className=" inline-block">assla.</span>
                 </div>
@@ -36,7 +36,7 @@ const Navbar: FC<Props> = ({ section }) => {
                 {
                     Object.keys(ActiveSection).filter(s => isNaN(Number(s))).map((s, i) =>
                         <Link key={i} href={`/${s}/`}>
-                            <div className={" underline underline-offset-4 mr-6 " + (s == Object.values(ActiveSection)[section] ? " text-secondary-100 text-5xl font-extrabold" : " text-secondary-300 text-4xl font-medium")}>{s + "."}</div>
+                            <div className={" underline underline-offset-4 mr-4 " + (s == Object.values(ActiveSection)[section] ? " text-secondary-100 text-4xl font-extrabold" : " text-secondary-300 text-3xl font-medium")}>{s + "."}</div>
                         </Link>
                     )
                 }

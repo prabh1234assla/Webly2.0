@@ -1,0 +1,29 @@
+#Introduction{
+    span{
+        @apply inline-block
+    }
+
+    span:not(.punctuation){
+        @apply ml-2
+    }
+
+    .txt_1{
+        @apply text-secondary-100 font-extrabold text-7xl
+    }
+
+    .txt_2:not(.punctuation){
+        @apply text-secondary-200 font-light text-5xl
+    }
+
+    .punctuation{
+        @apply text-secondary-200 font-light text-8xl
+    }
+
+    .txt_3{
+        @apply text-secondary-300 text-5xl
+    }
+
+    .txt_4{
+        @apply text-secondary-300 font-medium text-6xl underline underline-offset-4
+    }
+}
