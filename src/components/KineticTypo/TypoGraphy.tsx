@@ -1,4 +1,4 @@
-import { FC, useRef } from "react";
+import { FC, useEffect, useRef } from "react";
 import Options from "./Options";
 import Type from "./Type";
 
@@ -8,7 +8,11 @@ type Props = {
 
 const TypoGraphy: FC<Props> = ({ GeometryType }) => {
     const webgl__ref = useRef<HTMLDivElement>(null);
-    const typeInit = new Type({ ...Options[GeometryType], rotation: [2, 3, 3] }, webgl__ref);
+
+    useEffect(()=>{
+        console.log(webgl__ref)
+        const typeInit = new Type({ ...Options[GeometryType], rotation: [2, 3, 3] }, webgl__ref);
+    }, [])
 
     return (<main>
         <div className="content">

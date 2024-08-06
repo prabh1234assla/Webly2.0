@@ -14,7 +14,7 @@ class GL {
         })
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setClearColor(0x000000, 0);
+        this.renderer.setClearColor(0x0f00a0, 0);
 
         this.camera = new THREE.PerspectiveCamera(
             45,
@@ -23,7 +23,7 @@ class GL {
             1000
         );
 
-        this.camera.position.z = 1;
+        this.camera.position.z = 50;
 
         this.scene = new THREE.Scene();
 
@@ -73,6 +73,8 @@ class GL {
     addToDom(){
         const canvas = this.renderer?.domElement;
         const container = this.Ref.current;
+
+        console.log(canvas, container)
         container?.appendChild(canvas as Node);
     }
 

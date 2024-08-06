@@ -1,14 +1,19 @@
 import * as THREE from "three";
 
-import loadFont from "load-bmfont";
+var loadFont = require("load-bmfont")
 import createGeometry from "three-bmfont-text";
 import MSDFShader from "three-bmfont-text/shaders/msdf";
+import msdf_fragment from "./shaders/msdf_fragment.glsl";
+import msdf_vertex from "./shaders/msdf_vertex.glsl";
 import { OrbitronFont } from "./FontExports";
 import OrbitronFontAtlas from "@/assets/fonts/Orbitron-Black.png";
 import type { GeometryInit, OptionsInit, TypeOptionsInit, Vector3Init } from "../types/KineticTypo";
 import Error from "next/error";
 import { RefObject } from "react";
+import Json from "./x.json";
+import A from "./y.png";
 import GL from "./GL";
+import LOADER from "./Load.js";
 
 export default class Type extends THREE.Object3D {
 
@@ -36,15 +41,15 @@ export default class Type extends THREE.Object3D {
     geometry: GeometryInit = null
     material: THREE.ShaderMaterial | null = null
     mesh: THREE.Mesh | null = null
-    GLInstance : GL | null = null
+    GLInstance: GL | null = null
 
-    constructor(options: OptionsInit & {rotation: Vector3Init}, webgl__ref: RefObject<HTMLDivElement>){
+    constructor(options: OptionsInit & { rotation: Vector3Init }, webgl__ref: RefObject<HTMLDivElement>) {
         super()
         this.init(options, webgl__ref);
     }
 
-    
-    createRenderTarget(){
+
+    createRenderTarget() {
 
         this.renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight);
 
@@ -54,7 +59,7 @@ export default class Type extends THREE.Object3D {
         this.renderTargetScene = new THREE.Scene();
         this.renderTargetScene.background = new THREE.Color(this.TypeOptions.fill);
 
-        if(this.fontGeometry){
+        if (this.fontGeometry) {
 
             this.text = new THREE.Mesh(this.fontGeometry, this.fontMaterial as THREE.Material | THREE.Material[]);
             this.text.position.set(...this.TypeOptions.wordPosition);
@@ -65,15 +70,15 @@ export default class Type extends THREE.Object3D {
         }
     }
 
-    createMesh(){
+    createMesh() {
         this.geometry = this.TypeOptions.geometry;
 
         this.material = new THREE.ShaderMaterial({
             vertexShader: this.TypeOptions.vertex,
             fragmentShader: this.TypeOptions.fragment,
             uniforms: {
-                uTime: {value : 0},
-                uTexture: {value: this.renderTarget?.texture}
+                uTime: { value: 0 },
+                uTexture: { value: this.renderTarget?.texture }
             },
             defines: {
                 PI: Math.PI
@@ -81,7 +86,7 @@ export default class Type extends THREE.Object3D {
             side: THREE.DoubleSide
         });
 
-        if(this.geometry){
+        if (this.geometry) {
             this.mesh = new THREE.Mesh(this.geometry, this.material);
             this.mesh.position.set(...this.TypeOptions.position);
             this.mesh.rotation.set(...this.TypeOptions.rotation);
@@ -89,27 +94,30 @@ export default class Type extends THREE.Object3D {
 
             this.mesh.onBeforeRender = (renderer) => {
                 renderer.setRenderTarget(this.renderTarget);
-                if(this.renderTargetScene && this.renderTargetCamera){
+                if (this.renderTargetScene && this.renderTargetCamera) {
                     renderer.render(this.renderTargetScene, this.renderTargetCamera);
                 }
                 renderer.setRenderTarget(null);
             }
 
             this.add(this.mesh);
-            
-            if(this.GLInstance){
+
+            console.log(this.mesh)
+
+            if (this.GLInstance) {
+                console.log('jjj')
                 this.GLInstance.scene?.add(this);
             }
         }
     }
 
-    updateTime(time: string | number){
-        if(this.material){
+    updateTime(time: string | number) {
+        if (this.material) {
             this.material.uniforms.uTime.value = time;
         }
     }
-    
-    init(options: OptionsInit & {rotation: Vector3Init}, webgl__ref: RefObject<HTMLDivElement>){
+
+    init(options: OptionsInit & { rotation: Vector3Init }, webgl__ref: RefObject<HTMLDivElement>) {
 
         this.TypeOptions = {
             word: options.word,
@@ -123,36 +131,56 @@ export default class Type extends THREE.Object3D {
             vertex: options.shaders.vertex,
             fragment: options.shaders.fragment,
             fontFile: options.font.file || OrbitronFont,
-            fontAtlas: options.font.atlas || OrbitronFontAtlas,
+            fontAtlas: A,
         };
 
         this.GLInstance = new GL(webgl__ref);
+        console.log(loadFont, this.TypeOptions.fontFile)
 
-        loadFont(this.TypeOptions.fontFile, (err: Error, font: string) => {
+        loadFont(this.TypeOptions.fontFile, (err: Error, font) => {
+            if (err) {
+                console.error('Error loading font:', err);
+                return;
+            }
             this.fontGeometry = createGeometry({
-                font,
+                font: Json,
                 text: this.TypeOptions.word
             })
 
+            console.error(this.fontGeometry)
+
             this.loader = new THREE.TextureLoader();
 
-            if(this.TypeOptions.fontAtlas?.src){
-                this.loader.load(this.TypeOptions.fontAtlas?.src, (texture) => {
-                    this.fontMaterial = new THREE.RawShaderMaterial(
-                        MSDFShader({
-                            map: texture,
-                            side: THREE.DoubleSide,
-                            transparent: true,
-                            negate: false,
-                            color: this.TypeOptions.color
-                        })
-                    );
+            if (this.TypeOptions.fontAtlas?.src) {
+
+                this.loader.load(this.TypeOptions.fontAtlas?.src, (t) => {
+
+                    const shader_Object = MSDFShader({
+                        map: t,
+                        side: THREE.DoubleSide,
+                        transparent: true,
+                        negate: false,
+                        color: this.TypeOptions.color,
+                    })
+
+                    this.fontMaterial = new THREE.RawShaderMaterial({
+                        uniforms: {
+                            opacity: { value: 1 },
+                            map: { value: t || new THREE.Texture() },
+                            color: { value: new THREE.Color(this.TypeOptions.color) }
+                        },
+                        vertexShader: msdf_vertex,
+                        fragmentShader: msdf_fragment,
+                        glslVersion: THREE.GLSL3
+                    });
+
+                    console.log(this.fontMaterial);
 
                     this.createRenderTarget();
                     this.createMesh();
                 })
             }
         });
-        
+
     }
 }

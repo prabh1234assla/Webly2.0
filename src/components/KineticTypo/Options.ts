@@ -14,8 +14,8 @@ import ArchivoFontAtlas from "@/assets/fonts/ArchivoBlack-Regular.png";
 const Options: OptionsInit[] = [
     {
         word: "Achievements",
-        color: "#BE3144",
-        fill: "#2F113C",
+        color: "#ffffff",
+        fill: "#000000",
         geometry: new THREE.TorusKnotGeometry(9, 3, 768, 3, 4, 3),
         position: {
             texture: [-0.965, -0.4, 0],
@@ -27,15 +27,15 @@ const Options: OptionsInit[] = [
             fragment: torusKnot_fragShader
         },
         font: {
-            file: OrbitronFont.className,
+            file: OrbitronFont,
             atlas: OrbitronFontAtlas
         },
         class: "knot"
     },
     {
         word: "Projects",
-        color: "#872341",
-        fill: "#2F113C",
+        color: "#ffffff",
+        fill: "#3e64ff",
         geometry: new THREE.BoxGeometry(100, 10, 10, 64, 64, 64),
         position: {
             texture: [-0.945, -0.5, 0],
@@ -47,7 +47,7 @@ const Options: OptionsInit[] = [
             fragment: box_fragShader
         },
         font: {
-            file: ArchivoFont.className,
+            file: ArchivoFont,
             atlas: ArchivoFontAtlas
         },
         class: "box"

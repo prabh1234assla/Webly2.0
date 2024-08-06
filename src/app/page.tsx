@@ -79,7 +79,7 @@ export default function Home() {
           />
         </div>
 
-        <TypoGraphy GeometryType={0} />
+        <TypoGraphy GeometryType={2} />
         
       </div>
     </main >
